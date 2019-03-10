@@ -30,9 +30,14 @@
 					<% files.forEach(function(file) { %>
 						<div class="card card-body mb-3">
 							<% if(file.isImage){%>
-								<img src="/HealthCare_API/image/<%=file.filename %>"alt="">
+								<img src="http://127.0.0.1:3000/HealthCare_API/image/<%=file.filename %>"alt="">
+								<%=file.filename%>
 							<%}else{%>
-								<%file.filename%>
+								<video width="320" height="240" controls>
+									<source src="http://127.0.0.1:3000/HealthCare_API/video/<%=file.filename %>" type="video/mp4">
+									Your browser does not support the video tag
+								</video>
+								<%=file.filename%>
 								<%}%>
 							<form method="POST" action="/HealthCare_API/files/<%=file._id %>?_method=DELETE"><button class="btn btn-danger btn-block mt-4">Delete</form>
 						</div>

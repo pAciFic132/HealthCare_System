@@ -152,6 +152,7 @@ router.get('/image/:filename',(req,res)=>{
 		//Check if image
 		if(file.contentType=='image/jpeg'||file.contentType=='image/png'){
 			//Read output to browser
+			console.log('call image stream API');
 			const readstream=gfs.createReadStream(file.filename);
 			readstream.pipe(res);
 
@@ -170,7 +171,7 @@ router.get('/image/:filename',(req,res)=>{
 //#desc Display single file object
 router.get('/video/:filename',(req,res)=>{
 	gfs.files.findOne({filename:req.params.filename},(err,file)=>{
-
+		
 		//Checkt if file 
 		if(!file||file.length==0){
 			return res.status(404).json({
@@ -180,6 +181,7 @@ router.get('/video/:filename',(req,res)=>{
 		//Check if video
 		if(file.contentType=='video/mp4'||file.contentType=='video/avi'){
 			//Read output to browser
+			console.log('call video stream API');
 			const readstream=gfs.createReadStream(file.filename);
 			readstream.pipe(res);
 			//res.render('player',{movie:res});
