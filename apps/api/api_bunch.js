@@ -9,7 +9,7 @@ const Grid=require('gridfs-stream');
 const methodOverride=require('method-override');
 
 //Mongo URI
-const mongoURI='mongodb://localhost/Test';
+const mongoURI='mongodb://localhost/Test1';
 
 //Create mongo connection
 const conn=mongoose.createConnection(mongoURI);
@@ -20,29 +20,59 @@ conn.once('open',()=>{
 	// Init Stream
 	console.log("Connected MongoDB ");
 	gfs=Grid(conn.db,mongoose.mongo);
-	gfs.collection('uploads');
+	gfs.collection('temp');
+	//gfs.collection('uploads');
+	//gfs.collection('video');
+	//gfs.collection('thumbnail');
+	
 	console.log("Stream Service Start")
 });
 
-// Create storage engine
+// Create storage engine crypto version
+
+// const storage = new GridFsStorage({
+//   url: mongoURI,
+//   file: (req, file) => {
+//     return new Promise((resolve, reject) => {
+//       crypto.randomBytes(16, (err, buf) => {
+//         if (err) {
+//           return reject(err);
+//         }
+//         const filename = buf.toString('hex') + path.extname(file.originalname);
+//         const fileInfo = {
+//           filename: filename,
+//           bucketName: 'uploads'
+//         };
+//         resolve(fileInfo);
+//       });
+//     });
+//   }
+// });
+
+
+//Create Storage engine simple version
 const storage = new GridFsStorage({
   url: mongoURI,
   file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(16, (err, buf) => {
-        if (err) {
-          return reject(err);
-        }
-        const filename = buf.toString('hex') + path.extname(file.originalname);
-        const fileInfo = {
-          filename: filename,
-          bucketName: 'uploads'
-        };
-        resolve(fileInfo);
-      });
-    });
-  }
+    if(file.mimetype==='image/jpeg'||file.mimetype==='image/png'||file.mimetype==='image/jpg'){
+    	console.log('image file '+file.originalname+' upload');
+    	return{
+    		filename:file.originalname,
+    		bucketName:'temp'
+    	};
+    }else if(file.mimetype==='video/mp4'||file.mimetype==='video/avi'){
+    	console.log('video file '+file.originalname+' upload');
+    	return{
+    		filename:file.originalname,
+    		bucketName:'temp'
+    	};
+    }else{
+    	console.log('No support file '+file.originalname+'');
+    	return null;
+    }
+	}	
 });
+
 const upload = multer({ storage });
 
 //@route GET/
@@ -62,7 +92,7 @@ router.get('/',(req,res)=>{
 					file.isImage=false;
 				}
 			});
-			res.render('player',{files:files});
+			res.render('index',{files:files});
 		}
 
 		
@@ -72,8 +102,8 @@ router.get('/',(req,res)=>{
 //@route POST /upload
 //@desc Uploads file to DB
 router.post('/upload',upload.single('file'),(req,res)=>{
-	console.log("upload file "+req.file);
-	res.redirect('/')
+	console.log("upload file "+req.params);
+	res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
 
@@ -81,6 +111,7 @@ router.post('/upload',upload.single('file'),(req,res)=>{
 //#desc Display all files in JSON
 router.get('/files',(req,res)=>{
 	gfs.files.find().toArray((err,files)=>{
+		console.log('Call DataBase info API');
 		//Checkt if files 
 		if(!files||files.length==0){
 			return res.status(404).json({
@@ -139,6 +170,7 @@ router.get('/image/:filename',(req,res)=>{
 //#desc Display single file object
 router.get('/video/:filename',(req,res)=>{
 	gfs.files.findOne({filename:req.params.filename},(err,file)=>{
+
 		//Checkt if file 
 		if(!file||file.length==0){
 			return res.status(404).json({
@@ -164,12 +196,13 @@ router.get('/video/:filename',(req,res)=>{
 //@route DELETE /files/:id
 //@desc Delete file
 router.delete('/files/:id',(req,res)=>{
-	gfs.remove({_id:req.params.id,root:'uploads'},(err,girdStore)=>{
+	console.log('file delete '+req.params.id);
+	gfs.remove({_id:req.params.id,root:'temp'},(err,girdStore)=>{
 		if(err){
 			return res.status(404).json({err:err});
 		}
 
-		res.redirect('/');
+		res.redirect('/HealthCare_API');
 	});
 });
 

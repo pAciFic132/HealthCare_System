@@ -19,6 +19,6 @@ app.use(bodyParser.urlencoded({ extended: true })); //for parsing application/x-
 app.use('/',express.static('src'));
 app.use(methodOverride('_method'));
 app.set('view engine','ejs');
-app.set('views','/views');
+//app.set('views','/views');
 
 
