@@ -7,7 +7,7 @@ const multer=require('multer');
 const GridFsStorage=require('multer-gridfs-storage');
 const Grid=require('gridfs-stream');
 const methodOverride=require('method-override');
-
+const Schemas=require('../../models');
 //Mongo URI
 const mongoURI='mongodb://localhost/Test1';
 
@@ -16,16 +16,26 @@ const conn=mongoose.createConnection(mongoURI);
 
 //Init gfs (girdfs stream part)
 let gfs;
+let CategoryModel,ExerciseModel; 
 conn.once('open',()=>{
 	// Init Stream
 	console.log("Connected MongoDB ");
 	gfs=Grid(conn.db,mongoose.mongo);
+	
+	CategorySchema=Schemas.createCategorySchema(mongoose);
+	ExerciseSchema=Schemas.createExerciseSchema(mongoose);
+	ExerciseModel=mongoose.model("ExerciseData",ExerciseSchema);
+	CategoryModel=mongoose.model("CategoryData",CategorySchema);
 	gfs.collection('temp');
+
+	//gfs.collection('test1');
+	//gfs.collection('test2');
 	//gfs.collection('uploads');
 	//gfs.collection('video');
 	//gfs.collection('thumbnail');
 	
 	console.log("Stream Service Start")
+	//console.log(gfs);
 });
 
 // Create storage engine crypto version
@@ -75,6 +85,24 @@ const storage = new GridFsStorage({
 
 const upload = multer({ storage });
 
+//route GET/
+//@desc Loads form
+router.get('/main',(req,res)=>{
+	res.render('main');
+});
+
+//route GET/
+//@desc Loads form
+router.get('/category_page',(req,res)=>{
+	res.render('category_page');
+});
+
+//route GET/
+//@desc Loads form
+router.get('/exercise_page',(req,res)=>{
+	res.render('exercise_page');
+});
+
 //@route GET/
 //@desc Loads form
 
@@ -105,6 +133,46 @@ router.post('/upload',upload.single('file'),(req,res)=>{
 	console.log("upload file "+req.params);
 	res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
+})
+
+//@route POST /category
+//@desc upload category to DB
+router.post('/category',(req,res)=>{
+	console.log("category  upload"+req.body.category);
+	let new_data=new CategoryModel();
+	new_data.category=req.body.category;
+	new_data.desc=req.body.desc;
+	new_data.save(function(err,data){
+		if(err){
+			console.log(err);
+		}else{
+			console.log('save ok');
+		}
+	});
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+	return res.status(201);
+})
+
+
+//@route POST /category/exercise
+//@desc upload category to DB
+router.post('/:category/exercise',upload.single('file'),(req,res)=>{
+	console.log("exercise upload "+req.body.exercise);
+	let new_data=new ExerciseModel();
+	new_data.category=req.body.category;
+	new_data.exercise_name=req.body.category;
+	new_data.desc=req.body.desc;
+	new_data.save(function(err,data){
+		if(err){
+			console.log(err);
+		}else{
+			console.log('save ok');
+		}
+	});
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+	return res.status(201);
 })
 
 //@route GET /files
