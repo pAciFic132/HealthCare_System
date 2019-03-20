@@ -22,7 +22,7 @@ html(lang='en')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
     meta(name='description', content='')
     meta(name='author', content='')
-    title SPA Framework
+    title Health Care Admin Console
     // Bootstrap core CSS
     link(href='../src/vendor/bootstrap/css/bootstrap.min.css', rel='stylesheet')
     // Custom fonts for this template
@@ -33,25 +33,25 @@ html(lang='en')
     link(href='../src/css/sb-admin.css', rel='stylesheet')
   body#page-top
     nav.navbar.navbar-expand.navbar-dark.bg-dark.static-top
-      a.navbar-brand.mr-1(href='/spa') SPA Framework
+      a.navbar-brand.mr-1(href='/HealthCare/main') Health Care Admin Console
       button#sidebarToggle.btn.btn-link.btn-sm.text-white.order-1.order-sm-0(href='#')
         i.fas.fa-bars
     #wrapper
       // Sidebar
       ul.sidebar.navbar-nav
         li.nav-item.active
-          a.nav-link(href='/spa')
+          a.nav-link(href='/HealthCare/main')
             i.fas.fa-fw.fa-chart-area
             span Home
         // Content no list mode
           li.nav-item
-            a.nav-link(href='/spa/predict')
+            a.nav-link(href='/HealthCare/category_page')
               i.fas.fa-fw.fa-tachometer-alt
-              span Time Estimation
+              span Category
           li.nav-item
-            a.nav-link(href='/spa/statistics')
+            a.nav-link(href='/HealthCare/exercise_page')
               i.fas.fa-fw.fa-table
-              span Param Statistics
+              span Exercise
         // Content list mode 
         li.nav-item.dropdown
           a#pagesDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
@@ -59,8 +59,8 @@ html(lang='en')
             span Services
           .dropdown-menu(aria-labelledby='pagesDropdown')
             // h6.dropdown-header Login Screens:
-            a.dropdown-item(href='/spa/predict') Estimation
-            a.dropdown-item(href='/spa/statistics') Param Statics
+            a.dropdown-item(href='/HealthCare/category_page') Category
+            a.dropdown-item(href='/HealthCAre/exercise_page') Exercise
             // divide line
               .dropdown-divider
               h6.dropdown-header Other Pages:
@@ -70,7 +70,7 @@ html(lang='en')
         .container-fluid
           // Breadcrumbs
           ol.breadcrumb
-            li.breadcrumb-item.active Job Parameter Statistics
+            li.breadcrumb-item.active Exercise & Thumbnail Upload Delete Update
         // Body
         .container-fluid
           .cluster-box
@@ -116,5 +116,5 @@ html(lang='en')
         footer.sticky-footer
           .container.my-auto
             .copyright.text-center.my-auto
-              span Copyright © DKE Lab @ KNU
+              span Copyright © Hyun Tae Jeong
    

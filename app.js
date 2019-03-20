@@ -3,7 +3,9 @@ const app = express();
 const bodyParser=require('body-parser');
 const methodOverride=require('method-override');
 
-const ip='127.0.0.1';
+//const ip='127.0.0.1';
+const ip='10.0.2.15';
+//const ip='192.168.56.1';
 const port=3000;
 
 app.listen(port,ip, () => {

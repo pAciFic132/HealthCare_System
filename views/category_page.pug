@@ -33,7 +33,7 @@ html(lang='en')
     link(href='../src/css/sb-admin.css', rel='stylesheet')
   body#page-top
     nav.navbar.navbar-expand.navbar-dark.bg-dark.static-top
-      a.navbar-brand.mr-1(href='/main') Health Care Admin Console
+      a.navbar-brand.mr-1(href='/HealthCare/main') Health Care Admin Console
       button#sidebarToggle.btn.btn-link.btn-sm.text-white.order-1.order-sm-0(href='#')
         i.fas.fa-bars
     #wrapper
@@ -73,16 +73,17 @@ html(lang='en')
             li.breadcrumb-item.active Category Upload Delete Update
         // Body
         .container-fluid
-          .cluster-box
-            p.h2 Cluster Box
+          .category-upload-box
+            p.h2 Category Upload
+            br
+            p.h5 Category :
+            input(type='text', name='categorybox')
+            p.h5 Category Description
+            textarea(name='categorydescbox', cols='40', rows="5")
+            br
             br
             p
-            // select#cluster_box
-              // option(value='null', selected='') --choice--
-              // each element in cluster
-              //  option(value=element) #{element}
-             button.btn.btn-primary(type='button', name='next1',onclick='getScienceAppName()', value='Next') Next
-             button.btn.btn-primary(type='button', name='back1', onclick='reset_scienceappname_box()', value='Back') Back
+             button.btn.btn-primary(type='button', name='next1',onclick='getScienceAppName()', value='Submit') Submit 
           .science-app-name-box
             .card.mb-3
             p.h2 Science App Name Box
