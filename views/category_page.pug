@@ -77,16 +77,16 @@ html(lang='en')
             p.h2 Category Upload
             br
             p.h5 Category :
-            input(type='text', name='categorybox')
+            input(type='text',id='categorybox' name='categorybox')
             p.h5 Category Description
-            textarea(name='categorydescbox', cols='40', rows="5")
+            textarea(id='categorydescbox' ,name='categorydescbox', cols='40', rows="5")
             br
             br
             p
-             button.btn.btn-primary(type='button', name='next1',onclick='getScienceAppName()', value='Submit') Submit 
+             button.btn.btn-primary(type='button', name='submit_upload',onclick=' postCategory()', value='Submit') Submit 
           .science-app-name-box
             .card.mb-3
-            p.h2 Science App Name Box
+            p.h2 Category Update
             br
             p
              select#scienceappname_box
@@ -112,10 +112,16 @@ html(lang='en')
              button.btn.btn-primary(type='button', name='send', onclick='getResult()', value='Estimate Time') Estimate Time
              button.btn.btn-primary(type='button', name='reset', onclick='reset_all_predict()', value='Reset') Reset
 
-          .result
-            p.h3 Result
+          .category-delete-box
+            p.h2 Category Delete
             p
-             label#result --Empty--
+             select#category_box_delete
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='delete', onclick='deleteCategory()', value='delete') Delete
+             br
+             br
         // Sticky Footer
         footer.sticky-footer
           .container.my-auto

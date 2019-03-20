@@ -1,3 +1,61 @@
+//const ip='10.0.2.15';
+const ip='192.168.56.1'
+const port='3000';
+
+function postCategory () { 
+    
+    var name_category=document.getElementById("categorybox").value;
+    var desc_category=document.getElementById("categorydescbox").value;;
+    //console.log(name_category+"  "+desc_category);
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/category",
+        type:'post',
+        data:{
+            category:name_category,
+            desc:desc_category
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='duplicate'){
+                alert('Duplicate category');
+            }else if(data=='save'){
+                alert('Category upload Success');
+            }
+            
+            
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+    
+}
+
+function deleteCategory(){
+    var e = document.getElementById("category_box_delete");
+    var name_category = e.options[e.selectedIndex].value;
+    //console.log(name_category+"  "+desc_category);
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/deleteCategory/"+name_category,
+        type:'DELETE',
+        data:{
+            category:name_category
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='delete'){
+                alert('Category deleted');
+                location.reload();
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
 function getClusterName () { 
     $.ajax({
         url : "http://155.230.34.149:3000/spa/clusters/",

@@ -4,8 +4,8 @@ var Schemas={};
 Schemas.createCategorySchema=function(mongo){
 	//mongodb part
 	var CategorySchema = mongo.Schema({
-	cateogry: String,
-    cate_desc: String
+	category: String,
+    category_desc: String
 	});
 	
 	console.log('On CategorySchema');

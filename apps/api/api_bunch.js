@@ -17,6 +17,13 @@ const conn=mongoose.createConnection(mongoURI);
 //Init gfs (girdfs stream part)
 let gfs;
 let CategoryModel,ExerciseModel; 
+
+// let plz=mongoose.Schema({
+// 		category: String,
+//     category_desc: String
+// 	});
+// let plz1=conn.model('zzz',plz);;
+
 conn.once('open',()=>{
 	// Init Stream
 	console.log("Connected MongoDB ");
@@ -24,8 +31,9 @@ conn.once('open',()=>{
 	
 	CategorySchema=Schemas.createCategorySchema(mongoose);
 	ExerciseSchema=Schemas.createExerciseSchema(mongoose);
-	ExerciseModel=mongoose.model("ExerciseData",ExerciseSchema);
-	CategoryModel=mongoose.model("CategoryData",CategorySchema);
+	//use conn.model instead of moongoose.model becuase of sync problem
+	CategoryModel=conn.model("CategoryModel",CategorySchema);
+	ExerciseModel=conn.model("ExerciseModel",ExerciseSchema);
 	gfs.collection('temp');
 
 	//gfs.collection('test1');
@@ -33,8 +41,8 @@ conn.once('open',()=>{
 	//gfs.collection('uploads');
 	//gfs.collection('video');
 	//gfs.collection('thumbnail');
-	
-	console.log("Stream Service Start")
+	//console.dir(mongoose);
+	console.log("DB&Stream Service Start")
 	//console.log(gfs);
 });
 
@@ -94,7 +102,27 @@ router.get('/main',(req,res)=>{
 //route GET/
 //@desc Loads form
 router.get('/category_page',(req,res)=>{
-	res.render('category_page');
+	let array=new Array();
+	let count=0;
+	
+	CategoryModel.find(function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				array[0]='empty';
+				//return res.json('empty');
+			}
+			for(let i=0;i<data.length;i++) {
+				
+				array[count++]=data[i].category;
+			}
+			res.render('category_page',{categorylist:array});
+			//return res.json(array);
+		}
+	});
+	
 });
 
 //route GET/
@@ -138,34 +166,68 @@ router.post('/upload',upload.single('file'),(req,res)=>{
 //@route POST /category
 //@desc upload category to DB
 router.post('/category',(req,res)=>{
-	console.log("category  upload"+req.body.category);
-	let new_data=new CategoryModel();
-	new_data.category=req.body.category;
-	new_data.desc=req.body.desc;
-	new_data.save(function(err,data){
+	console.log('category upload api call')
+
+	CategoryModel.findOne({'category':req.body.category},function(err,data){
 		if(err){
 			console.log(err);
+			res.status(500).send('Internal Server Error');
 		}else{
-			console.log('save ok');
+			if(data==null){
+
+				console.log("category  upload "+req.body.category+" "+req.body.desc);
+				
+				let new_data=new CategoryModel();
+				new_data.category=req.body.category;
+				new_data.category_desc=req.body.desc;	
+				
+				new_data.save(function(err,data){
+					if(err){
+						console.log(err);
+						res.status(500).send('Internal Server Error');
+					}else{
+						console.log('save ok');
+						return res.json('save');
+					}
+				});
+			}else{
+				console.log("duplicate value is comming.")
+				return res.json('duplicate');
+			}
 		}
 	});
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
-	return res.status(201);
+	//return res.status(201);
 })
 
 
 //@route POST /category/exercise
-//@desc upload category to DB
-router.post('/:category/exercise',upload.single('file'),(req,res)=>{
+//@desc upload exercise to DB
+router.post('/category/exercise',upload.single('file'),(req,res)=>{
+	console.log('ca')
+	CategoryModel.findOne({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				return res.json(data);
+			}
+		}
+	});
+
 	console.log("exercise upload "+req.body.exercise);
-	let new_data=new ExerciseModel();
+	let new_data=new mongoose.connect.models.CategoryData();
 	new_data.category=req.body.category;
 	new_data.exercise_name=req.body.category;
 	new_data.desc=req.body.desc;
 	new_data.save(function(err,data){
 		if(err){
 			console.log(err);
+			res.status(500).send('Internal Server Error');
 		}else{
 			console.log('save ok');
 		}
@@ -173,7 +235,31 @@ router.post('/:category/exercise',upload.single('file'),(req,res)=>{
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 	return res.status(201);
-})
+});
+
+
+//@route GET /categorylist
+//@desc Disyplay categorylist
+router.get('/categorylist',(req,res)=>{
+	let array=new Array();
+	let count=0;
+	console.log('call cateogrylist');
+	CategoryModel.find(function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}
+			for(let i=0;i<data.length;i++) {
+				array[count++]=data[i].category;
+			}
+			console.log(data.length+' find');
+			return res.json(array);
+		}
+	});
+});
 
 //@route GET /files
 //#desc Display all files in JSON
@@ -263,6 +349,16 @@ router.get('/video/:filename',(req,res)=>{
 	});
 });
 
+//@route DELETE /category/delete
+router.delete('/deleteCategory/:categoryname',(req,res)=>{
+	console.log('categorty delete api call');
+	console.log('category delete '+req.params.categoryname);
+	CategoryModel.deleteOne({category:req.params.categoryname},(err)=>{
+		if(err) return handleError(err);
+		return res.json('delete');
+	});
+
+});
 //@route DELETE /files/:id
 //@desc Delete file
 router.delete('/files/:id',(req,res)=>{
