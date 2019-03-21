@@ -81,37 +81,27 @@ html(lang='en')
             p.h5 Category Description
             textarea(id='categorydescbox' ,name='categorydescbox', cols='40', rows="5")
             br
-            br
             p
              button.btn.btn-primary(type='button', name='submit_upload',onclick=' postCategory()', value='Submit') Submit 
-          .science-app-name-box
+          .category-update-box
             .card.mb-3
             p.h2 Category Update
             br
             p
-             select#scienceappname_box
+             select#category_box_update
               option(vaule='null', selected='') --choice--
-             button.btn.btn-primary(type='button', name='next2', onclick='getParameter()', value='Next') Next
-             button.btn.btn-primary(type='button', name='back2', onclick='reset_parameter_table()', value='Back') Back
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next_update', onclick=' getCategory()', value='Next') Next
+             p.h5 Category :
+             input(type='text',id='categorybox_update' name='categorybox_update')
+             p.h5 Category Description
+             textarea(id='categorydescbox_update' ,name='categorydescbox_update', cols='40', rows="5")
              br
+             button.btn.btn-primary(type='button', name='submit_upload',onclick=' updateCategory()', value='Submit') Submit
              br
           p
            .card.mb-3
-           .card-header
-            i.fas.fa-table
-             |               Parameter Table
-           .parameter-table
-               .table-responsive
-                table#parameter_table.table.table-bordered(width='10%', cellspacing='0')
-                 thead
-                  tr
-                   th Parameter
-                   th Value
-                 tbody
-           .buttons
-             button.btn.btn-primary(type='button', name='send', onclick='getResult()', value='Estimate Time') Estimate Time
-             button.btn.btn-primary(type='button', name='reset', onclick='reset_all_predict()', value='Reset') Reset
-
           .category-delete-box
             p.h2 Category Delete
             p

@@ -202,6 +202,31 @@ router.post('/category',(req,res)=>{
 })
 
 
+//@route POST /category
+//@desc upload category to DB
+router.post('/category/update',(req,res)=>{
+	console.log('category update api call')
+
+	CategoryModel.findOneAndUpdate({'category':req.body.category_origin},{'category':req.body.category,'category_desc':req.body.desc},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					console.log('Update complete');
+					return res.json('update');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+	//return res.status(201);
+})
+
 //@route POST /category/exercise
 //@desc upload exercise to DB
 router.post('/category/exercise',upload.single('file'),(req,res)=>{
@@ -237,6 +262,24 @@ router.post('/category/exercise',upload.single('file'),(req,res)=>{
 	return res.status(201);
 });
 
+
+//@route post /categorylist/"categoryname"
+//@desc Display categoryinfo becuase of encoding problem use post method
+router.post('/category/info',(req,res)=>{
+	console.log('call cateogry info api');
+	CategoryModel.findOne({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				return res.json(data);
+			}
+		}
+	});
+});
 
 //@route GET /categorylist
 //@desc Disyplay categorylist

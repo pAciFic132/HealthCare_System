@@ -2,6 +2,61 @@
 const ip='192.168.56.1'
 const port='3000';
 
+function getCategory(){
+
+    var e = document.getElementById("category_box_update");
+    var name_category = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/category/info",
+        type:'POST',
+        data:{
+            category:name_category
+        },
+        dataType:'json',
+        success : function (data) {
+            $('#categorybox_update').empty();
+            $('#categorydescbox_update').empty();
+            $("#categorybox_update").val(data.category);
+            $('#categorydescbox_update').val(data.category_desc);
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+function updateCategory(){
+    var e = document.getElementById("category_box_update");
+    var orign_category = e.options[e.selectedIndex].value;
+    var name_category=document.getElementById("categorybox_update").value;
+    var desc_category=document.getElementById("categorydescbox_update").value;;
+    //console.log(name_category+"  "+desc_category);
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/category/update",
+        type:'POST',
+        data:{
+            category_origin:orign_category,
+            category:name_category,
+            desc:desc_category
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='update'){
+                alert('Update category');
+                location.reload();
+            }else if(data=='emtpy'){
+                alert('Update failed');
+            }
+            
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
 function postCategory () { 
     
     var name_category=document.getElementById("categorybox").value;
@@ -9,7 +64,7 @@ function postCategory () {
     //console.log(name_category+"  "+desc_category);
     $.ajax({
         url : "http://"+ip+":"+port+"/HealthCare/category",
-        type:'post',
+        type:'POST',
         data:{
             category:name_category,
             desc:desc_category
@@ -55,6 +110,9 @@ function deleteCategory(){
         }
     });
 }
+
+
+
 
 function getClusterName () { 
     $.ajax({
