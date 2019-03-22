@@ -17,8 +17,8 @@ Schemas.createExerciseSchema=function(mongo){
 	//mongodb part
 	var ExerciseSchema = mongo.Schema({
 	cateogry: String,
-    exercise_name: String,
-    exer_desc: String,
+    exercise: String,
+    exercise_desc: String,
     image_title: String,
     movie_title: String
 	});

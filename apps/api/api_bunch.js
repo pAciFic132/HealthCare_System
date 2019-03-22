@@ -93,6 +93,8 @@ const storage = new GridFsStorage({
 
 const upload = multer({ storage });
 
+/*get func*/
+
 //route GET/
 //@desc Loads form
 router.get('/main',(req,res)=>{
@@ -128,7 +130,26 @@ router.get('/category_page',(req,res)=>{
 //route GET/
 //@desc Loads form
 router.get('/exercise_page',(req,res)=>{
-	res.render('exercise_page');
+	let array=new Array();
+	let count=0;
+
+	CategoryModel.find(function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				array[0]='empty';
+				//return res.json('empty');
+			}
+			for(let i=0;i<data.length;i++) {
+				
+				array[count++]=data[i].category;
+			}
+			res.render('exercise_page',{categorylist:array});
+			//return res.json(array);
+		}
+	});
 });
 
 //@route GET/
@@ -155,132 +176,6 @@ router.get('/',(req,res)=>{
 	});
 });
 
-//@route POST /upload
-//@desc Uploads file to DB
-router.post('/upload',upload.single('file'),(req,res)=>{
-	console.log("upload file "+req.params);
-	res.redirect('/HealthCare_API');
-	//res.json({file:req.file});
-})
-
-//@route POST /category
-//@desc upload category to DB
-router.post('/category',(req,res)=>{
-	console.log('category upload api call')
-
-	CategoryModel.findOne({'category':req.body.category},function(err,data){
-		if(err){
-			console.log(err);
-			res.status(500).send('Internal Server Error');
-		}else{
-			if(data==null){
-
-				console.log("category  upload "+req.body.category+" "+req.body.desc);
-				
-				let new_data=new CategoryModel();
-				new_data.category=req.body.category;
-				new_data.category_desc=req.body.desc;	
-				
-				new_data.save(function(err,data){
-					if(err){
-						console.log(err);
-						res.status(500).send('Internal Server Error');
-					}else{
-						console.log('save ok');
-						return res.json('save');
-					}
-				});
-			}else{
-				console.log("duplicate value is comming.")
-				return res.json('duplicate');
-			}
-		}
-	});
-	//res.redirect('/HealthCare_API');
-	//res.json({file:req.file});
-	//return res.status(201);
-})
-
-
-//@route POST /category
-//@desc upload category to DB
-router.post('/category/update',(req,res)=>{
-	console.log('category update api call')
-
-	CategoryModel.findOneAndUpdate({'category':req.body.category_origin},{'category':req.body.category,'category_desc':req.body.desc},{multi:true},function(err,data)
-			{
-				if(err){
-					console.log(err);
-					res.status(500).send('Internal Server Error');
-				}
-				if(data==null){
-					console.log('Nothing to change');
-					return res.json('empty');
-				}else{
-					console.log('Update complete');
-					return res.json('update');
-				}
-			});
-
-	//res.redirect('/HealthCare_API');
-	//res.json({file:req.file});
-	//return res.status(201);
-})
-
-//@route POST /category/exercise
-//@desc upload exercise to DB
-router.post('/category/exercise',upload.single('file'),(req,res)=>{
-	console.log('ca')
-	CategoryModel.findOne({'category':req.body.category},function(err,data){
-		if(err){
-			console.log(err);
-			res.status(500).send('Internal Server Error');
-		}else{
-			if(data==null){
-				return res.json('empty');
-			}else{
-				return res.json(data);
-			}
-		}
-	});
-
-	console.log("exercise upload "+req.body.exercise);
-	let new_data=new mongoose.connect.models.CategoryData();
-	new_data.category=req.body.category;
-	new_data.exercise_name=req.body.category;
-	new_data.desc=req.body.desc;
-	new_data.save(function(err,data){
-		if(err){
-			console.log(err);
-			res.status(500).send('Internal Server Error');
-		}else{
-			console.log('save ok');
-		}
-	});
-	//res.redirect('/HealthCare_API');
-	//res.json({file:req.file});
-	return res.status(201);
-});
-
-
-//@route post /categorylist/"categoryname"
-//@desc Display categoryinfo becuase of encoding problem use post method
-router.post('/category/info',(req,res)=>{
-	console.log('call cateogry info api');
-	CategoryModel.findOne({'category':req.body.category},function(err,data){
-		if(err){
-			console.log(err);
-			res.status(500).send('Internal Server Error');
-		}else{
-			if(data==null){
-				return res.json('empty');
-			}else{
-				return res.json(data);
-			}
-		}
-	});
-});
-
 //@route GET /categorylist
 //@desc Disyplay categorylist
 router.get('/categorylist',(req,res)=>{
@@ -288,6 +183,7 @@ router.get('/categorylist',(req,res)=>{
 	let count=0;
 	console.log('call cateogrylist');
 	CategoryModel.find(function(err,data){
+		console.log(data);
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');
@@ -392,6 +288,143 @@ router.get('/video/:filename',(req,res)=>{
 	});
 });
 
+/*post func*/
+
+//@route POST /category
+//@desc upload category to DB
+router.post('/category',(req,res)=>{
+	console.log('category upload api call')
+
+	CategoryModel.findOne({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+
+				console.log("category  upload "+req.body.category+" "+req.body.desc);
+				
+				let new_data=new CategoryModel();
+				new_data.category=req.body.category;
+				new_data.category_desc=req.body.desc;	
+				
+				new_data.save(function(err,data){
+					if(err){
+						console.log(err);
+						res.status(500).send('Internal Server Error');
+					}else{
+						console.log('save ok');
+						return res.json('save');
+					}
+				});
+			}else{
+				console.log("duplicate value is comming.")
+				return res.json('duplicate');
+			}
+		}
+	});
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+	//return res.status(201);
+})
+
+
+//@route POST /category
+//@desc update category to DB
+router.post('/category/update',(req,res)=>{
+	console.log('category update api call')
+
+	CategoryModel.findOneAndUpdate({'category':req.body.category_origin},{'category':req.body.category,'category_desc':req.body.desc},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					console.log('Update complete');
+					return res.json('update');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+	//return res.status(201);
+})
+
+//@route POST /upload
+
+//@desc Uploads file to DB
+router.post('/upload',upload.single('file'),(req,res)=>{
+	console.log("1");
+	console.log("upload file "+req.params);
+	res.json('pew');
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+})
+
+//@route POST /exercise
+//@desc upload exercise to DB
+router.post('/exercise',(req,res)=>{
+	console.log('category upload api call')
+
+	ExerciseModel.findOne({'exercise':req.body.exercise},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+
+				console.log("exercise  upload "+req.body.exercise+" "+req.body.desc);
+				
+				let new_data=new ExerciseModel();
+				new_data.category=req.body.category;
+				new_data.exercise=req.body.exercise;
+				new_data.exercise_desc=req.body.desc;	
+				new_data.image_title=req.body.image_name;
+				new_data.save(function(err,data){
+					if(err){
+						console.log(err);
+						res.status(500).send('Internal Server Error');
+					}else{
+						console.log('save ok');
+						return res.json('save');
+					}
+				});
+			}else{
+				console.log("duplicate value is comming.")
+				return res.json('duplicate');
+			}
+		}
+	});
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+});
+
+
+//@route post /categorylist/"categoryname"
+//@desc Display categoryinfo becuase of encoding problem use post method
+router.post('/category/info',(req,res)=>{
+	console.log('call cateogry info api');
+	CategoryModel.findOne({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				return res.json(data);
+			}
+		}
+	});
+});
+
+
+/*delete func*/
+
 //@route DELETE /category/delete
 router.delete('/deleteCategory/:categoryname',(req,res)=>{
 	console.log('categorty delete api call');
@@ -402,6 +435,8 @@ router.delete('/deleteCategory/:categoryname',(req,res)=>{
 	});
 
 });
+
+
 //@route DELETE /files/:id
 //@desc Delete file
 router.delete('/files/:id',(req,res)=>{

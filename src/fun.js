@@ -2,6 +2,81 @@
 const ip='192.168.56.1'
 const port='3000';
 
+
+/*exercise page function*/
+
+function postExercise () { 
+    var file = document.getElementById('file');
+    var file_value=document.getElementById('file').value;
+    var pathHeader = file_value.lastIndexOf("\\");
+    var pathMiddle = file_value.lastIndexOf(".");
+    var pathEnd = file_value.length;
+
+    fileName = file_value.substring(pathHeader+1, pathMiddle);
+    extName = file_value.substring(pathMiddle+1, pathEnd);
+    allFilename = fileName+"."+extName;
+
+    if (!file){
+        alert('Thumbnail Image Upload Please');
+        return; // 파일이 없는 경우 빠져나오기
+    } 
+    var filedata = new FormData(); // FormData 인스턴스 생성
+    filedata.append('file', $("input[name=file]")[0].files[0]);
+
+    var e = document.getElementById("category_box");
+    var name_category = e.options[e.selectedIndex].value;
+    var name_exercise=document.getElementById("exercisebox").value;
+    var desc_exercise=document.getElementById("exercisedescbox").value;
+    //console.log(name_exercise+"  "+desc_exercise);
+    if(name_exercise==""){
+        alert('Please input Exercise Name');
+    }else{
+        $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exercise",
+        type:'POST',
+        data:{
+            category:name_category,
+            exercise:name_exercise,
+            desc:desc_exercise,
+            image_name:allFilename
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='duplicate'){
+                alert('Duplicate category');
+            }else if(data=='save'){
+                 $.ajax({
+                    url: "http://"+ip+":"+port+"/HealthCare/upload",
+                            enctype:'multipart/form-data',
+                            processData: false,
+                            contentType: false,
+                            data: filedata,
+                            type: 'POST',
+                            success: function(result){
+                                console.log(result);
+                                console.log(allFilename);
+                                alert('Category upload Success');
+                                location.reload();
+                            },
+                            failure:function(error){
+                                console.log(allFilename);
+                                alert(error);
+
+                            }
+
+                    });
+
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+    }   
+}
+
+/*category page function*/
 function getCategory(){
 
     var e = document.getElementById("category_box_update");
@@ -62,7 +137,10 @@ function postCategory () {
     var name_category=document.getElementById("categorybox").value;
     var desc_category=document.getElementById("categorydescbox").value;;
     //console.log(name_category+"  "+desc_category);
-    $.ajax({
+    if(name_category==""){
+        alert('Please input Category Name');
+    }else{
+        $.ajax({
         url : "http://"+ip+":"+port+"/HealthCare/category",
         type:'POST',
         data:{
@@ -75,6 +153,7 @@ function postCategory () {
                 alert('Duplicate category');
             }else if(data=='save'){
                 alert('Category upload Success');
+                location.reload();
             }
             
             
@@ -84,7 +163,7 @@ function postCategory () {
             alert(error);
         }
     });
-    
+    }   
 }
 
 function deleteCategory(){
@@ -110,6 +189,11 @@ function deleteCategory(){
         }
     });
 }
+
+
+
+
+
 
 
 
