@@ -16,7 +16,7 @@ Schemas.createCategorySchema=function(mongo){
 Schemas.createExerciseSchema=function(mongo){
 	//mongodb part
 	var ExerciseSchema = mongo.Schema({
-	cateogry: String,
+	category: String,
     exercise: String,
     exercise_desc: String,
     image_title: String,

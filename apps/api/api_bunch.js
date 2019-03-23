@@ -181,7 +181,8 @@ router.get('/exerciselist/:category',(req,res)=>{
 	let array=new Array();
 	let count=0;
 	console.log('call exerciselist');
-	ExerciseModel.find({'category':req.body.category},function(err,data){
+	console.log(req.params.category);
+	ExerciseModel.find({'category':req.params.category},function(err,data){
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');
@@ -267,7 +268,7 @@ router.get('/image/:filename',(req,res)=>{
 			});
 		}
 		//Check if image
-		if(file.contentType=='image/jpeg'||file.contentType=='image/png'){
+		if(file.contentType=='image/jpeg'||file.contentType=='image/png'||file.contentType=='image/jpg'){
 			//Read output to browser
 			console.log('call image stream API');
 			const readstream=gfs.createReadStream(file.filename);
@@ -353,7 +354,7 @@ router.post('/category',(req,res)=>{
 })
 
 
-//@route POST /category
+//@route POST /category/update
 //@desc update category to DB
 router.post('/category/update',(req,res)=>{
 	console.log('category update api call')
@@ -368,6 +369,7 @@ router.post('/category/update',(req,res)=>{
 					console.log('Nothing to change');
 					return res.json('empty');
 				}else{
+
 					console.log('Update complete');
 					return res.json('update');
 				}
@@ -380,19 +382,56 @@ router.post('/category/update',(req,res)=>{
 
 //@route POST /upload
 
+//@desc Uploads file to DB for unexpected error
+router.post('/upload1',upload.single('file1'),(req,res)=>{
+	console.log("upload file "+req.params);
+	res.json('pew');
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+})
 //@desc Uploads file to DB
 router.post('/upload',upload.single('file'),(req,res)=>{
-	console.log("1");
 	console.log("upload file "+req.params);
 	res.json('pew');
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
 
+//@route POST /exercise/update
+//@desc upload exercise to DB
+router.post('/exercise/update',(req,res)=>{
+	console.log('exercise update api call')
+
+	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_origin},{'exercise':req.body.exercise,'exercise_desc':req.body.desc,'image_title':req.body.image_name},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					console.log('Update Exercise -text complete');
+					gfs.remove({filename:req.body.image_name,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						console.log('exercise image file delete ')
+						//return res.json('delete');
+					});	
+					return res.json('update');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+});
+
 //@route POST /exercise
 //@desc upload exercise to DB
 router.post('/exercise',(req,res)=>{
-	console.log('category upload api call')
+	console.log('exercise upload api call')
 
 	ExerciseModel.findOne({'exercise':req.body.exercise},function(err,data){
 		if(err){
@@ -428,11 +467,29 @@ router.post('/exercise',(req,res)=>{
 });
 
 
-//@route post /categorylist/"categoryname"
+//@route post /category/info
 //@desc Display categoryinfo becuase of encoding problem use post method
 router.post('/category/info',(req,res)=>{
 	console.log('call cateogry info api');
 	CategoryModel.findOne({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				return res.json(data);
+			}
+		}
+	});
+});
+
+//@route post /exercise/info
+//@desc Display categoryinfo becuase of encoding problem use post method
+router.post('/exercise/info',(req,res)=>{
+	console.log('call exercise info api');
+	ExerciseModel.findOne({'exercise':req.body.exercise},function(err,data){
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');

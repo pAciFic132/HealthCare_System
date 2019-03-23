@@ -17,10 +17,24 @@ html(lang='en')
           var reader = new FileReader();
           reader.onload = function (e) {
             $('#blah').attr('src', e.target.result);
+            $('#image_title1').text(input.files[0].name);
+            console.log(input.files[0].name);
           }
           reader.readAsDataURL(input.files[0]);
         }
       }
+    script(type='text/javascript').
+      function readURL_1(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#blah1').attr('src', e.target.result);
+            $('#image_title').text(input.files[0].name);
+            console.log(input.files[0].name);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }  
     script(src='../src/js/sb-admin.min.js')
     // Demo scripts for this page
     script(src='../src/js/demo/datatables-demo.js')
@@ -89,6 +103,7 @@ html(lang='en')
           .exercise-upload-box
             p.h2 Exercise & Thumbnail Upload
             p
+             h5 Category List
              select#category_box
               option(vaule='null', selected='') --choice--
               each element in categorylist
@@ -107,6 +122,8 @@ html(lang='en')
                   br
                   br
                   img#blah(src='#', alt='your image',width=50)
+                  br
+                  label#image_title1 --image title--
                   //input.btn.btn-primary.btn-block(type='submit',width=200 value='Submit')    
              br     
              button.btn.btn-primary(type='button', name='submit_upload',onclick='postExercise()', value='Submit') Submit
@@ -114,35 +131,49 @@ html(lang='en')
           .exercise-update-box
             .card.mb-3
             p.h2 Exercise Update
-            br
             p
+             h5 Category List
              select#category_box_update
               option(vaule='null', selected='') --choice--
               each element in categorylist
                option(value=element) #{element}
-             button.btn.btn-primary(type='button', name='next', onclick='getExercise()', value='next') Next
-             button.btn.btn-primary(type='button', name='back', onclick='reset_exercise_box()', value='Back') Back
+             button.btn.btn-primary(type='button', name='next', onclick='getExercise_update()', value='next') Next
+             //button.btn.btn-primary(type='button', name='back', onclick='reset_exercise_box_update()', value='Back') Back
+             h5 Exercise List
              select#exercise_box_update
               option(vaule='null', selected='') --choice--
-             button.btn.btn-primary(type='button', name='delete', onclick='getExerciseInfo()', value='delete') Next
+             button.btn.btn-primary(type='button', name='next2', onclick='getExerciseInfo()', value='next2') Next
              p.h5 Exercise :
              input(type='text',id='exercisebox_update' name='exercisebox_update')
              p.h5 Exercise Description
              textarea(id='exercisedescbox_update' ,name='exercisedescbox_update', cols='40', rows="5")
+             .custom-file.mb-3
+                  input#file1.custom-file-input(type='file',name='file1',onchange='readURL_1(this)')
+                  label.custom-file-label(for='file' ,width=200) Choose File
+                  br
+                  br
+                  img#blah1(src='#', alt='your image',width=50)
              br
-             img#blah(src='#', alt='your image',width=50)
+             
              br
+             label#image_title --image title--
+             br
+             label#movie_title --movie title--
+             br
+             button.btn.btn-primary(type='button', name='submit_update',onclick='updateExercise()', value='Update') Update
           p
            .card.mb-3
           .exercise-delete-box
             p.h2 Exercise Delete
             p
+             h5 Category List
              select#category_box_delete
               option(vaule='null', selected='') --choice--
               each element in categorylist
                option(value=element) #{element}
              button.btn.btn-primary(type='button', name='next1', onclick='getExercise()', value='next') Next
-             button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             //button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             h5 Exercise List
              select#exercise_box_delete
               option(vaule='null', selected='') --choice--
              button.btn.btn-primary(type='button', name='delete', onclick='deleteExercise()', value='delete') Delete
