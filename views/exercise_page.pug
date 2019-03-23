@@ -11,6 +11,16 @@ html(lang='en')
     script(src='../src/vendor/datatables/jquery.dataTables.js')
     script(src='../src/vendor/datatables/dataTables.bootstrap4.js')
     // Custom scripts for all pages
+    script(type='text/javascript').
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#blah').attr('src', e.target.result);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
     script(src='../src/js/sb-admin.min.js')
     // Demo scripts for this page
     script(src='../src/js/demo/datatables-demo.js')
@@ -92,42 +102,52 @@ html(lang='en')
               tr
                td
                 .custom-file.mb-3
-                 input#file.custom-file-input(type='file',name='file')
-                 label.custom-file-label(for='file' ,width=200) Choose File
-                 //input.btn.btn-primary.btn-block(type='submit',width=200 value='Submit')
-             button.btn.btn-primary(type='button', name='submit_upload',onclick='postExercise()', value='Submit') Submit
+                  input#file.custom-file-input(type='file',name='file',onchange='readURL(this)')
+                  label.custom-file-label(for='file' ,width=200) Choose File
+                  br
+                  br
+                  img#blah(src='#', alt='your image',width=50)
+                  //input.btn.btn-primary.btn-block(type='submit',width=200 value='Submit')    
              br     
-          .science-app-name-box
+             button.btn.btn-primary(type='button', name='submit_upload',onclick='postExercise()', value='Submit') Submit
+             br    
+          .exercise-update-box
             .card.mb-3
-            p.h2 Science App Name Box
+            p.h2 Exercise Update
             br
             p
-             select#scienceappname_box
+             select#category_box_update
               option(vaule='null', selected='') --choice--
-             button.btn.btn-primary(type='button', name='next2', onclick='getResult_statistics()', value='Next') Next
-             button.btn.btn-primary(type='button', name='back2', onclick='reset_parameter_table()', value='Back') Back
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next', onclick='getExercise()', value='next') Next
+             button.btn.btn-primary(type='button', name='back', onclick='reset_exercise_box()', value='Back') Back
+             select#exercise_box_update
+              option(vaule='null', selected='') --choice--
+             button.btn.btn-primary(type='button', name='delete', onclick='getExerciseInfo()', value='delete') Next
+             p.h5 Exercise :
+             input(type='text',id='exercisebox_update' name='exercisebox_update')
+             p.h5 Exercise Description
+             textarea(id='exercisedescbox_update' ,name='exercisedescbox_update', cols='40', rows="5")
              br
+             img#blah(src='#', alt='your image',width=50)
              br
           p
-            .card.mb-3
-            .card-header
-             i.fas.fa-table
-              |               Parameter Rank Top  
-              br
-              br
-              select#indexcount_box.custom-select.custom-select-sm.form-control.form-control-sm(name='dataTable_length',onchange='getResult_statistics()', aria-controls='dataTable')
-                option(value='5') 5
-                option(value='10', selected='') 10
-                option(value='25') 25
-                option(value='50') 50
-                option(value='100') 100
-            .parameter-table
-             .table-responsive
-              table#parameter_table.table.table-bordered(width='10%', cellspacing='0')
-               thead
-               tbody
-            .reset-button
-             button.btn.btn-primary(type='button', name='reset', onclick='reset_all()', value='Reset') Reset
+           .card.mb-3
+          .exercise-delete-box
+            p.h2 Exercise Delete
+            p
+             select#category_box_delete
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next1', onclick='getExercise()', value='next') Next
+             button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             select#exercise_box_delete
+              option(vaule='null', selected='') --choice--
+             button.btn.btn-primary(type='button', name='delete', onclick='deleteExercise()', value='delete') Delete
+             br
+             br
         // Sticky Footer
         footer.sticky-footer
           .container.my-auto

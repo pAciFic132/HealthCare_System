@@ -93,7 +93,7 @@ const storage = new GridFsStorage({
 
 const upload = multer({ storage });
 
-/*get func*/
+/*-----------------------------------------------------------------get func------------------------------------------------------*/
 
 //route GET/
 //@desc Loads form
@@ -154,7 +154,6 @@ router.get('/exercise_page',(req,res)=>{
 
 //@route GET/
 //@desc Loads form
-
 router.get('/',(req,res)=>{
 	gfs.files.find().toArray((err,files)=>{
 		//Checkt if files 
@@ -173,6 +172,31 @@ router.get('/',(req,res)=>{
 		}
 
 		
+	});
+});
+
+//@route GET /category/:exericse
+//@desc Disyplay exerciselist
+router.get('/exerciselist/:category',(req,res)=>{
+	let array=new Array();
+	let count=0;
+	console.log('call exerciselist');
+	ExerciseModel.find({'category':req.body.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				console.log('emtpy exercise in this category');
+				return res.json('empty');
+			}else{
+				for(let i=0;i<data.length;i++) {
+					array[count++]=data[i].exercise;
+				}
+				console.log(data.length+" find");
+				return res.json(array);
+			}
+		}
 	});
 });
 
@@ -288,7 +312,7 @@ router.get('/video/:filename',(req,res)=>{
 	});
 });
 
-/*post func*/
+/*-----------------------------------------------------------------post func------------------------------------------------------*/
 
 //@route POST /category
 //@desc upload category to DB
@@ -423,9 +447,10 @@ router.post('/category/info',(req,res)=>{
 });
 
 
-/*delete func*/
+/*-----------------------------------------------------------------delete func------------------------------------------------------*/
 
-//@route DELETE /category/delete
+//@route DELETE /deleteCategory/:categoryname
+//@desc delelte category
 router.delete('/deleteCategory/:categoryname',(req,res)=>{
 	console.log('categorty delete api call');
 	console.log('category delete '+req.params.categoryname);
@@ -434,6 +459,40 @@ router.delete('/deleteCategory/:categoryname',(req,res)=>{
 		return res.json('delete');
 	});
 
+});
+
+//@route DELETE /deleteexercise/:exercisename
+//@desc delelte exercise
+router.delete('/deleteExercise/:exercisename',(req,res)=>{
+	
+
+	console.log('exercise delete api call');
+	console.log('exercise delete '+req.params.exercisename);
+
+	ExerciseModel.findOne({'exercise':req.params.exercisename},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				console.log(data);
+				let image_name=data.image_title;
+				ExerciseModel.deleteOne({exercise:req.params.exercisename},(err)=>{
+					if(err) return handleError(err);
+					gfs.remove({filename:image_name,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						console.log('exercise image file delete ')
+						return res.json('delete');
+					});	
+				});
+			}
+		}
+	});
+	
 });
 
 

@@ -5,6 +5,57 @@ const port='3000';
 
 /*exercise page function*/
 
+function getExerciseInfo(){
+
+    var e = document.getElementById("exercise_box_update");
+    var name_exercise = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/category/info",
+        type:'POST',
+        data:{
+            exercise:name_exercise
+        },
+        dataType:'json',
+        success : function (data) {
+            $('#exercisebox_update').empty();
+            $('#exercisedescbox_update').empty();
+            $("#exercisebox_update").val(data.category);
+            $('#exercisedescbox_update').val(data.category_desc);
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+function getExercise(){
+
+    var e = document.getElementById("category_box_delete");
+    var name_category = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exerciselist/"+name_category,
+        type:'GET',
+        data:{
+            category:name_category
+        },
+        dataType:'json',
+       success : function (data) {
+             $("#exercise_box_delete").find("option").remove();
+             $("#exercise_box_delete").append("<option value='' selected>--choice--</option>");
+            let i;
+            for(let i=0;i<data.length;i++)
+            {
+                $('#exercise_box_delete').append('<option value='+data[i]+'>'+data[i]+'</option>')
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
 function postExercise () { 
     var file = document.getElementById('file');
     var file_value=document.getElementById('file').value;
@@ -76,6 +127,34 @@ function postExercise () {
     }   
 }
 
+function deleteExercise(){
+    var e = document.getElementById("exercise_box_delete");
+    var name_exercise = e.options[e.selectedIndex].value;
+    //console.log(name_category+"  "+desc_category);
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/deleteExercise/"+name_exercise,
+        type:'DELETE',
+        data:{
+            exercisename:name_exercise
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='delete'){
+                alert('Exercise deleted');
+                location.reload();
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+function reset_exercise_box(){
+     $("#exercise_box_delete").find("option").remove();
+     $("#exercise_box_delete").append("<option value='' selected>--choice--</option>");
+}
 /*category page function*/
 function getCategory(){
 
