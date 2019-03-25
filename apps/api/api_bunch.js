@@ -98,7 +98,27 @@ const upload = multer({ storage });
 //route GET/
 //@desc Loads form
 router.get('/main',(req,res)=>{
-	res.render('main');
+	let array=new Array();
+	let count=0;
+	
+	CategoryModel.find(function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				array[0]='empty';
+				//return res.json('empty');
+			}
+			for(let i=0;i<data.length;i++) {
+				
+				array[count++]=data[i].category;
+			}
+			res.render('main',{categorylist:array});
+			//return res.json(array);
+		}
+	});
+	
 });
 
 //route GET/

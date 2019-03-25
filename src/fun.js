@@ -1,6 +1,11 @@
-//const ip='10.0.2.15';
-const ip='192.168.56.1'
-const port='3000';
+const ip='122.39.157.16';
+const port='21003';
+//const ip='192.168.0.100';
+//const port='80';
+/*localvm settings*/
+//const ip='192.168.56.1'
+//const ip='127.0.0.1';
+
 
 
 /*exercise page function*/

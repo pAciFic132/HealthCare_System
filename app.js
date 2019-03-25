@@ -3,10 +3,12 @@ const app = express();
 const bodyParser=require('body-parser');
 const methodOverride=require('method-override');
 
+/*workspace setting : coders http://122.39.157.16:21003/HealthCare/main */
+const ip='192.168.0.100';
+/*local vm settings*/
 //const ip='127.0.0.1';
-const ip='10.0.2.15';
 //const ip='192.168.56.1';
-const port=3000;
+const port=80;
 
 app.listen(port,ip, () => {
   console.log('ip : '+ip+' port number : '+port);

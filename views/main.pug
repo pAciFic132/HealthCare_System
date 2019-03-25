@@ -15,6 +15,47 @@ html(lang='en')
     link(href='../src/vendor/datatables/dataTables.bootstrap4.css', rel='stylesheet')
     // Custom styles for this template
     link(href='../src/css/sb-admin.css', rel='stylesheet')
+    // Bootstrap core JavaScript
+    script(src='../src/vendor/jquery/jquery.min.js')
+    script(src='../src/vendor/bootstrap/js/bootstrap.bundle.min.js')
+    // Core plugin JavaScript
+    script(src='../src/vendor/jquery-easing/jquery.easing.min.js')
+    // Page level plugin JavaScript
+    script(src='../src/vendor/chart.js/Chart.min.js')
+    script(src='../src/vendor/datatables/jquery.dataTables.js')
+    script(src='../src/vendor/datatables/dataTables.bootstrap4.js')
+    // Custom scripts for all pages
+    script(src='../src/js/sb-admin.min.js')
+    // Demo scripts for this page
+    script(src='../src/js/demo/datatables-demo.js')
+    script(src='../src/js/demo/chart-area-demo.js')
+    //script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+    script(src="../src/fun.js")
+    // Custom scripts for all pages
+    script(type='text/javascript').
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#blah').attr('src', e.target.result);
+            $('#image_title1').text(input.files[0].name);
+            console.log(input.files[0].name);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+    script(type='text/javascript').
+      function readURL_1(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#blah1').attr('src', e.target.result);
+            $('#image_title').text(input.files[0].name);
+            console.log(input.files[0].name);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }  
   body#page-top
     nav.navbar.navbar-expand.navbar-dark.bg-dark.static-top
       a.navbar-brand.mr-1(href='/HealthCare/main') Health Care Admin Console
@@ -56,9 +97,37 @@ html(lang='en')
           ol.breadcrumb
             li.breadcrumb-item.active HealthCare Admin Console Description
           div
-           h1 Health Care System Control Interface
+           h1 HealthCare System Control Interface
            h1 Category, Exercise, Thumbnail Upload/Delete/Update
            hr
+           p.h2 HealthCare Info
+            p
+             h5 Category List
+             select#category_box_update
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next', onclick='getExercise_update()', value='next') Next
+             //button.btn.btn-primary(type='button', name='back', onclick='reset_exercise_box_update()', value='Back') Back
+             h5 Exercise List
+             select#exercise_box_update
+              option(vaule='null', selected='') --choice--
+             button.btn.btn-primary(type='button', name='next2', onclick='getExerciseInfo()', value='next2') Next
+             p.h5 Exercise :
+             input(type='text',id='exercisebox_update' name='exercisebox_update')
+             p.h5 Exercise Description
+             textarea(id='exercisedescbox_update' ,name='exercisedescbox_update', cols='40', rows="5")
+             .custom-file.mb-3
+                  br
+                  br
+                  img#blah1(src='#', alt='your image',width=50)
+             br
+             
+             br
+             label#image_title --image title--
+             br
+             label#movie_title --movie title--
+
            label(for='inputEmail') Email address kathor888@naver.com
 
         // Sticky Footer
@@ -66,17 +135,4 @@ html(lang='en')
           .container.my-auto
             .copyright.text-center.my-auto
               span Copyright © Hyun Tae Jeong
-    // Bootstrap core JavaScript
-    script(src='../src/vendor/jquery/jquery.min.js')
-    script(src='../src/vendor/bootstrap/js/bootstrap.bundle.min.js')
-    // Core plugin JavaScript
-    script(src='../src/vendor/jquery-easing/jquery.easing.min.js')
-    // Page level plugin JavaScript
-    script(src='../src/vendor/chart.js/Chart.min.js')
-    script(src='../src/vendor/datatables/jquery.dataTables.js')
-    script(src='../src/vendor/datatables/dataTables.bootstrap4.js')
-    // Custom scripts for all pages
-    script(src='../src/js/sb-admin.min.js')
-    // Demo scripts for this page
-    script(src='../src/js/demo/datatables-demo.js')
-    script(src='../src/js/demo/chart-area-demo.js')
+   
