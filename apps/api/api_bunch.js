@@ -221,6 +221,32 @@ router.get('/exerciselist/:category',(req,res)=>{
 	});
 });
 
+//@route GET /category/:exericse
+//@desc for client exercise info
+router.get('/exerciselist_info/:category',(req,res)=>{
+	let array=new Array();
+	let count=0;
+	console.log('call exerciselist_info');
+	console.log(req.params.category);
+	ExerciseModel.find({'category':req.params.category},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				console.log('emtpy exercise in this category');
+				return res.json('empty');
+			}else{
+				// for(let i=0;i<data.length;i++) {
+				// 	array[count++]=data[i].exercise;
+				// }
+				console.log(data.length+" find");
+				return res.json(data);
+			}
+		}
+	});
+});
+
 //@route GET /categorylist
 //@desc Disyplay categorylist
 router.get('/categorylist',(req,res)=>{
@@ -248,17 +274,27 @@ router.get('/categorylist',(req,res)=>{
 //@route GET /files
 //#desc Display all files in JSON
 router.get('/files',(req,res)=>{
+	let array=new Array();
+	let count=0;
 	gfs.files.find().toArray((err,files)=>{
 		console.log('Call DataBase info API');
 		//Checkt if files 
-		if(!files||files.length==0){
+		if(err){
+			console.oog(err);
+			res.status(500).send('Internal Server Error');
+		}
+		else if(!files||files.length==0){
 			return res.status(404).json({
 				err:'No files exist'
 			});
+		}else{
+			for(let i=0;i<files.length;i++){
+				array[count++]=files[i].filename;
+			}
+			console.log(files.length+' find');
+			//Files exist
+			return res.json(array);
 		}
-
-		//Files exist
-		return res.json(files);
 	});
 });
 
@@ -409,6 +445,8 @@ router.post('/upload1',upload.single('file1'),(req,res)=>{
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
+
+
 //@desc Uploads file to DB
 router.post('/upload',upload.single('file'),(req,res)=>{
 	console.log("upload file "+req.params);
@@ -507,9 +545,10 @@ router.post('/category/info',(req,res)=>{
 
 //@route post /exercise/info
 //@desc Display categoryinfo becuase of encoding problem use post method
-router.post('/exercise/info',(req,res)=>{
-	console.log('call exercise info api');
-	ExerciseModel.findOne({'exercise':req.body.exercise},function(err,data){
+router.post('/exercise/info',(req,res)=>{ //remember key값이름은 보낸곳 기준
+	console.log('call exercise info api '+req.body.exercise_name);
+	//console.log('call exercise info api '+req.params.exercise_name);
+	ExerciseModel.findOne({'exercise':req.body.exercise_name},function(err,data){
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');
@@ -517,12 +556,41 @@ router.post('/exercise/info',(req,res)=>{
 			if(data==null){
 				return res.json('empty');
 			}else{
+				console.log(data);
 				return res.json(data);
 			}
 		}
 	});
 });
 
+
+//@route post /exerciseinfo/ for client
+//@desc Display categoryinfo becuase of encoding problem use post method
+router.post('/exerciseinfo',(req,res)=>{ //remember key값이름은 보낸곳 기준
+	let array=new Array();
+	let count=0;
+	console.log('call exercise info api for client '+req.body.exercise_name);
+	//console.log('call exercise info api '+req.params.exercise_name);
+	ExerciseModel.findOne({'exercise':req.body.exercise_name},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				console.log("original "+data);
+				array[0]=data.category;
+				array[1]=data.exercise;
+				array[2]=data.exercise_desc;
+				array[3]=data.image_title;
+				array[4]=data.movie_title;
+				console.log("array ver "+array);
+				return res.json(array);
+			}
+		}
+	});
+});
 
 /*-----------------------------------------------------------------delete func------------------------------------------------------*/
 
