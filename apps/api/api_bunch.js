@@ -84,7 +84,14 @@ const storage = new GridFsStorage({
     		filename:file.originalname,
     		bucketName:'temp'
     	};
-    }else{
+    }else if(file.mimetype=='text/plain'){
+    	console.log('skelton|rgb file '+file.originalname+' upload');
+    	return{
+    		filename:file.originalname,
+    		bucketName:'temp'
+    	};
+    }
+    else{
     	console.log('No support file '+file.originalname+'');
     	return null;
     }
@@ -221,14 +228,14 @@ router.get('/exerciselist/:category',(req,res)=>{
 	});
 });
 
-//@route GET /category/:exericse
+//@route POST /category/:exericse
 //@desc for client exercise info
-router.get('/exerciselist_info/:category',(req,res)=>{
+router.post('/exerciselist_info',(req,res)=>{
 	let array=new Array();
 	let count=0;
-	console.log('call exerciselist_info');
-	console.log(req.params.category);
-	ExerciseModel.find({'category':req.params.category},function(err,data){
+	console.log('call exerciselist_info for client');
+	console.log(req.body.category);
+	ExerciseModel.find({'category':req.body.category},function(err,data){
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');
@@ -237,11 +244,12 @@ router.get('/exerciselist_info/:category',(req,res)=>{
 				console.log('emtpy exercise in this category');
 				return res.json('empty');
 			}else{
-				// for(let i=0;i<data.length;i++) {
-				// 	array[count++]=data[i].exercise;
-				// }
+				 for(let i=0;i<data.length;i++) {
+				 	array[count++]=data[i].exercise;
+				 }
+				console.log("ary ver"+array);
 				console.log(data.length+" find");
-				return res.json(data);
+				return res.json(array);
 			}
 		}
 	});
@@ -291,6 +299,7 @@ router.get('/files',(req,res)=>{
 			for(let i=0;i<files.length;i++){
 				array[count++]=files[i].filename;
 			}
+			console.log(files);
 			console.log(files.length+' find');
 			//Files exist
 			return res.json(array);
@@ -369,6 +378,33 @@ router.get('/video/:filename',(req,res)=>{
 	});
 });
 
+
+//@route GET /txt/"filename"
+//#desc Display single file object
+router.get('/txt/:filename',(req,res)=>{
+	console.log('call rgb_skeleton file download api');
+	gfs.files.findOne({filename:req.params.filename},(err,file)=>{
+		//Checkt if file 
+		if(!file||file.length==0){
+			return res.status(404).json({
+				err:'No files exist'
+			});
+		}
+		//Check if txt
+		if(file.contentType=='text/plain'){
+			//Read output to browser
+			console.log('call txt stream API');
+			const readstream=gfs.createReadStream(file.filename);
+			readstream.pipe(res);
+
+		}else{
+			res.status(404).json({
+				err:'Not an rgb_skeleton file'
+			})
+		}
+		
+	});
+});
 /*-----------------------------------------------------------------post func------------------------------------------------------*/
 
 //@route POST /category
@@ -454,6 +490,30 @@ router.post('/upload',upload.single('file'),(req,res)=>{
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
+
+//@route POST /exercise/rgb_skeleton
+//@desc renew exercise rgb_skeleton data
+router.post('/exercise/rgb_skeleton',(req,res)=>{
+	console.log('exercise rgb_skeleton renew api call for'+req.body.exercise_name+' '+req.body.body_title+' '+req.body.rgb_title);
+
+	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_name},{'body_title':req.body.body_title,'rgb_title':req.body.rgb_title},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					console.log('renew Exercise -rgb_skeleton complete');
+					return res.json('update');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+});
 
 //@route POST /exercise/update
 //@desc upload exercise to DB
@@ -585,6 +645,8 @@ router.post('/exerciseinfo',(req,res)=>{ //remember key값이름은 보낸곳 �
 				array[2]=data.exercise_desc;
 				array[3]=data.image_title;
 				array[4]=data.movie_title;
+				array[5]=data.body_title;
+				array[6]=data.rgb_title;
 				console.log("array ver "+array);
 				return res.json(array);
 			}
@@ -593,6 +655,50 @@ router.post('/exerciseinfo',(req,res)=>{ //remember key값이름은 보낸곳 �
 });
 
 /*-----------------------------------------------------------------delete func------------------------------------------------------*/
+//@route DELETE /delete_rgb_bodydata/:categoryname
+//@desc delelte rdb_bodaydata
+router.post('/delete_rgb_bodydata',(req,res)=>{
+
+	console.log('rgb_body delete api call');
+	console.log('rgb_body delete '+req.body.exercisename);
+	
+	ExerciseModel.findOne({'exercise':req.body.exercisename},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				console.log(data);
+				let exercise_name=data.exercise;
+				let skelton_name=data.body_title;
+				let rgb_name=data.rgb_title;
+				ExerciseModel.findOneAndUpdate({'exercise':data.exercise},{'body_title':"",'rgb_title':""},{multi:true},(err)=>{
+					if(err) return handleError(err);
+					gfs.remove({filename:rgb_name,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						console.log('delete rgb data '+rgb_name);
+						gfs.remove({filename:skelton_name,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						
+						console.log('delete skelton file delete '+skelton_name);
+						return res.json('delete');
+					});	
+					});	
+				});
+			}
+		}
+	});
+	//return res.json('delete test');
+	
+});
+
+
 
 //@route DELETE /deleteCategory/:categoryname
 //@desc delelte category
