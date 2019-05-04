@@ -299,7 +299,7 @@ router.get('/files',(req,res)=>{
 			for(let i=0;i<files.length;i++){
 				array[count++]=files[i].filename;
 			}
-			console.log(files);
+			console.log(array);
 			console.log(files.length+' find');
 			//Files exist
 			return res.json(array);
