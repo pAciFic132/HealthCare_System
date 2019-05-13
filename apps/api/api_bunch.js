@@ -606,9 +606,9 @@ router.post('/category/info',(req,res)=>{
 //@route post /exercise/info
 //@desc Display categoryinfo becuase of encoding problem use post method
 router.post('/exercise/info',(req,res)=>{ //remember key값이름은 보낸곳 기준
-	console.log('call exercise info api '+req.body.exercise_name);
+	console.log('call exercise info api '+req.body.exercise);
 	//console.log('call exercise info api '+req.params.exercise_name);
-	ExerciseModel.findOne({'exercise':req.body.exercise_name},function(err,data){
+	ExerciseModel.findOne({'exercise':req.body.exercise},function(err,data){
 		if(err){
 			console.log(err);
 			res.status(500).send('Internal Server Error');
