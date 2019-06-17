@@ -34,7 +34,29 @@ html(lang='en')
           }
           reader.readAsDataURL(input.files[0]);
         }
-      }  
+      }
+    script(type='text/javascript').
+      function readURL_2(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#moive_title1').text(input.files[0].name);
+            console.log(input.files[0].name);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+    script(type='text/javascript').
+      function readURL_3(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('#moive_title2').text(input.files[0].name);
+            console.log(input.files[0].name);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }   
     script(src='../src/js/sb-admin.min.js')
     // Demo scripts for this page
     script(src='../src/js/demo/datatables-demo.js')
@@ -158,11 +180,11 @@ html(lang='en')
              br
              label#image_title --image title--
              br
-             label#movie_title --movie title--
+             label#mp4_title --movie title--
              br
              button.btn.btn-primary(type='button', name='submit_update',onclick='updateExercise()', value='Update') Update
           p
-           .card.mb-3
+          .card.mb-3
           .exercise-delete-box
             p.h2 Exercise Delete
             p
@@ -177,6 +199,79 @@ html(lang='en')
              select#exercise_box_delete
               option(vaule='null', selected='') --choice--
              button.btn.btn-primary(type='button', name='delete', onclick='deleteExercise()', value='delete') Delete
+             br
+             br
+          p
+          .card.mb-3
+          .exercise-movie-upload-box
+            p.h2 Exercise Movie Upload
+            p
+             h5 Category List
+             select#category_box_movie_upload
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next1', onclick='getExercise_movie_upload()', value='next') Next
+             //button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             h5 Exercise List
+             select#exercise_box_moive_upload
+              option(vaule='null', selected='') --choice--
+             br
+             table(width='400', cellpadding='5', cellspacing='2', border='0', align='')
+              tr
+               td
+                .custom-file.mb-3
+                  input#file_movie_upload.custom-file-input(type='file',name='file_movie_upload',onchange='readURL_2(this)')
+                  label.custom-file-label(for='file' ,width=200) Choose File
+                  br
+                  br
+                  label#moive_title1 --movie title--
+             button.btn.btn-primary(type='button', name='submit_upload',onclick='postMovie()', value='Submit') Submit    
+             br 
+             br
+          p
+          .card.mb-3
+          .exercise-movie-update-box
+            p.h2 Exercise Movie Update
+            p
+             h5 Category List
+             select#category_box_movie_update
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next1', onclick='getExercise_movie_update()', value='next') Next
+             //button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             h5 Exercise List
+             select#exercise_box_movie_update
+              option(vaule='null', selected='') --choice--
+             br
+             table(width='400', cellpadding='5', cellspacing='2', border='0', align='')
+              tr
+               td
+                .custom-file.mb-3
+                  input#file_movie_update.custom-file-input(type='file',name='file_movie_update',onchange='readURL_3(this)')
+                  label.custom-file-label(for='file' ,width=200) Choose File
+                  br
+                  br
+                  label#moive_title2 --movie title--
+             button.btn.btn-primary(type='button', name='submit_update_movie',onclick='updateMovie()', value='Update') Update
+             br
+          p
+          .card.mb-3
+          .exercise-movie-delete-box
+            p.h2 Exercise Movie Delete
+            p
+             h5 Category List
+             select#category_box_movie_delete
+              option(vaule='null', selected='') --choice--
+              each element in categorylist
+               option(value=element) #{element}
+             button.btn.btn-primary(type='button', name='next1', onclick='getExercise_movie_delete()', value='next') Next
+             //button.btn.btn-primary(type='button', name='back1', onclick='reset_exercise_box()', value='Back') Back
+             h5 Exercise List
+             select#exercise_box_movie_delete
+              option(vaule='null', selected='') --choice--
+             button.btn.btn-primary(type='button', name='delete', onclick='deleteMovie()', value='delete') Delete
              br
              br
         // Sticky Footer

@@ -9,6 +9,245 @@ const port='21003';
 
 
 /*exercise page function*/
+function updateMovie () { 
+    var file = document.getElementById('file_movie_update');
+    var file_value=document.getElementById('file_movie_update').value;
+    var pathHeader = file_value.lastIndexOf("\\");
+    var pathMiddle = file_value.lastIndexOf(".");
+    var pathEnd = file_value.length;
+
+    fileName = file_value.substring(pathHeader+1, pathMiddle);
+    extName = file_value.substring(pathMiddle+1, pathEnd);
+    allFilename = fileName+"."+extName;
+
+    if (!file){
+        alert('Thumbnail Image Upload Please');
+        return; // 파일이 없는 경우 빠져나오기
+    } 
+    var filedata = new FormData(); // FormData 인스턴스 생성
+    filedata.append('file_movie_update', $("input[name=file_movie_update]")[0].files[0]);
+
+    var name_exercise=document.getElementById("exercise_box_movie_update").value;
+    //console.log(name_exercise+"  "+desc_exercise);
+    if(name_exercise==""){
+        alert('Please input Exercise Name');
+    }else{
+        $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exercise/movie/update",
+        type:'POST',
+        data:{
+            exercise_name:name_exercise,
+            movie_title:allFilename
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='duplicate'){
+                alert('Duplicate category');
+            }else if(data=='update'){
+                 $.ajax({
+                    url: "http://"+ip+":"+port+"/HealthCare/file_movie_update",
+                            enctype:'multipart/form-data',
+                            processData: false,
+                            contentType: false,
+                            data: filedata,
+                            type: 'POST',
+                            success: function(result){
+                                console.log(result);
+                                console.log(allFilename);
+                                alert('Movie update Success');
+                                location.reload();
+                            },
+                            failure:function(error){
+                                console.log(allFilename);
+                                alert(error);
+
+                            }
+
+                    });
+
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+    }   
+}
+
+
+function getExercise_movie_update(){
+
+    var e = document.getElementById("category_box_movie_update");
+    var name_category = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exerciselist/"+name_category,
+        type:'GET',
+        data:{
+            category:name_category
+        },
+        dataType:'json',
+       success : function (data) {
+             $("#exercise_box_movie_update").find("option").remove();
+             $("#exercise_box_movie_update").append("<option value='' selected>--choice--</option>");
+            let i;
+            for(let i=0;i<data.length;i++)
+            {
+                $('#exercise_box_movie_update').append('<option value='+data[i]+'>'+data[i]+'</option>')
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+
+function deleteMovie(){
+    var e = document.getElementById("exercise_box_movie_delete");
+    var name_exercise = e.options[e.selectedIndex].value;
+    //console.log(name_category+"  "+desc_category);
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/delete_movie",
+        type:'DELETE',
+        data:{ 
+            exercisename:name_exercise
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='delete'){
+                alert('Movie deleted');
+                location.reload();
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+function getExercise_movie_delete(){
+
+    var e = document.getElementById("category_box_movie_delete");
+    var name_category = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exerciselist/"+name_category,
+        type:'GET',
+        data:{
+            category:name_category
+        },
+        dataType:'json',
+       success : function (data) {
+             $("#exercise_box_movie_delete").find("option").remove();
+             $("#exercise_box_movie_delete").append("<option value='' selected>--choice--</option>");
+            let i;
+            for(let i=0;i<data.length;i++)
+            {
+                $('#exercise_box_movie_delete').append('<option value='+data[i]+'>'+data[i]+'</option>')
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
+
+
+function postMovie () { 
+    var file = document.getElementById('file_movie_upload');
+    var file_value=document.getElementById('file_movie_upload').value;
+    var pathHeader = file_value.lastIndexOf("\\");
+    var pathMiddle = file_value.lastIndexOf(".");
+    var pathEnd = file_value.length;
+
+    fileName = file_value.substring(pathHeader+1, pathMiddle);
+    extName = file_value.substring(pathMiddle+1, pathEnd);
+    allFilename = fileName+"."+extName;
+
+    if (!file){
+        alert('Thumbnail Image Upload Please');
+        return; // 파일이 없는 경우 빠져나오기
+    } 
+    var filedata = new FormData(); // FormData 인스턴스 생성
+    filedata.append('file_movie_upload', $("input[name=file_movie_upload]")[0].files[0]);
+
+    var name_exercise=document.getElementById("exercise_box_moive_upload").value;
+    //console.log(name_exercise+"  "+desc_exercise);
+    if(name_exercise==""){
+        alert('Please input Exercise Name');
+    }else{
+        $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exercise/movie",
+        type:'POST',
+        data:{
+            exercise_name:name_exercise,
+            movie_title:allFilename
+        },//전송할 데이터 
+        dataType:'json',
+        success : function (data) {
+            if(data=='duplicate'){
+                alert('Duplicate category');
+            }else if(data=='renew'){
+                 $.ajax({
+                    url: "http://"+ip+":"+port+"/HealthCare/file_movie_upload",
+                            enctype:'multipart/form-data',
+                            processData: false,
+                            contentType: false,
+                            data: filedata,
+                            type: 'POST',
+                            success: function(result){
+                                console.log(result);
+                                console.log(allFilename);
+                                alert('Movie upload Success');
+                                location.reload();
+                            },
+                            failure:function(error){
+                                console.log(allFilename);
+                                alert(error);
+
+                            }
+
+                    });
+
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+    }   
+}
+
+function getExercise_movie_upload(){
+
+    var e = document.getElementById("category_box_movie_upload");
+    var name_category = e.options[e.selectedIndex].value;
+    $.ajax({
+        url : "http://"+ip+":"+port+"/HealthCare/exerciselist/"+name_category,
+        type:'GET',
+        data:{
+            category:name_category
+        },
+        dataType:'json',
+       success : function (data) {
+             $("#exercise_box_moive_upload").find("option").remove();
+             $("#exercise_box_moive_upload").append("<option value='' selected>--choice--</option>");
+            let i;
+            for(let i=0;i<data.length;i++)
+            {
+                $('#exercise_box_moive_upload').append('<option value='+data[i]+'>'+data[i]+'</option>')
+            }
+        },
+        failure:function(error){
+            //console.log('2');
+            alert(error);
+        }
+    });
+}
 
 function updateExercise () { 
     var file = document.getElementById('file1');
@@ -96,8 +335,12 @@ function getExerciseInfo(){
             $('#exercisedescbox_update').val(data.exercise_desc);
             image_title.innerText=data.image_title;
             movie_title.innerText=data.movie_title;
+            mp4_title.innerText=data.mp4_title;
             $('#blah1').attr("src","http://"+ip+":"+port+"/HealthCare/image/"+data.image_title)
-
+            $('#download_movie').attr("href","http://"+ip+":"+port+"/HealthCare/video/"+data.movie_title)
+            $('#download_movie').text(data.movie_title);
+            $('#download_mp4').attr("href","http://"+ip+":"+port+"/HealthCare/txt/"+data.mp4_title)
+            $('#download_mp4').text(data.mp4_title);
             // $.ajax({
             //     url : "http://"+ip+":"+port+"/HealthCare/image/"+data.image_title,
             //     type:'GET',
@@ -223,7 +466,7 @@ function postExercise () {
                             success: function(result){
                                 console.log(result);
                                 console.log(allFilename);
-                                alert('Category upload Success');
+                                alert('Exercise upload Success');
                                 location.reload();
                             },
                             failure:function(error){

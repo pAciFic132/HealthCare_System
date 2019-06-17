@@ -79,7 +79,7 @@ const storage = new GridFsStorage({
     		bucketName:'temp'
     	};
     }else if(file.mimetype==='video/mp4'||file.mimetype==='video/avi'){
-    	console.log('video file '+file.originalname+' upload');
+    	console.log('mp4 file '+file.originalname+' upload');
     	return{
     		filename:file.originalname,
     		bucketName:'temp'
@@ -178,6 +178,7 @@ router.get('/exercise_page',(req,res)=>{
 		}
 	});
 });
+
 
 //@route GET/
 //@desc Loads form
@@ -378,11 +379,10 @@ router.get('/video/:filename',(req,res)=>{
 	});
 });
 
-
 //@route GET /txt/"filename"
 //#desc Display single file object
 router.get('/txt/:filename',(req,res)=>{
-	console.log('call rgb_skeleton file download api');
+	console.log('call rgb_skeleton file download api '+req.params.filename);
 	gfs.files.findOne({filename:req.params.filename},(err,file)=>{
 		//Checkt if file 
 		if(!file||file.length==0){
@@ -474,10 +474,25 @@ router.post('/category/update',(req,res)=>{
 
 //@route POST /upload
 
+router.post('/file_movie_update',upload.single('file_movie_update'),(req,res)=>{
+	console.log("upload file "+req.params);
+	res.json('upload file complete');
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+})
+
+//@desc Uploads file to DB for unexpected error
+router.post('/file_movie_upload',upload.single('file_movie_upload'),(req,res)=>{
+	console.log("upload file "+req.params);
+	res.json('upload file complete');
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+})
+
 //@desc Uploads file to DB for unexpected error
 router.post('/upload1',upload.single('file1'),(req,res)=>{
 	console.log("upload file "+req.params);
-	res.json('pew');
+	res.json('upload file complete');
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
@@ -486,17 +501,15 @@ router.post('/upload1',upload.single('file1'),(req,res)=>{
 //@desc Uploads file to DB
 router.post('/upload',upload.single('file'),(req,res)=>{
 	console.log("upload file "+req.params);
-	res.json('pew');
+	res.json('upload file complete');
 	//res.redirect('/HealthCare_API');
 	//res.json({file:req.file});
 })
 
-//@route POST /exercise/rgb_skeleton
-//@desc renew exercise rgb_skeleton data
-router.post('/exercise/rgb_skeleton',(req,res)=>{
-	console.log('exercise rgb_skeleton renew api call for'+req.body.exercise_name+' '+req.body.body_title+' '+req.body.rgb_title);
+router.post('/exercise/movie',(req,res)=>{
+	console.log('exercise movie renew api call for '+req.body.exercise_name+' '+req.body.movie_title);
 
-	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_name},{'body_title':req.body.body_title,'rgb_title':req.body.rgb_title},{multi:true},function(err,data)
+	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_name},{'movie_title':req.body.movie_title},{multi:true},function(err,data)
 			{
 				if(err){
 					console.log(err);
@@ -506,7 +519,60 @@ router.post('/exercise/rgb_skeleton',(req,res)=>{
 					console.log('Nothing to change');
 					return res.json('empty');
 				}else{
-					console.log('renew Exercise -rgb_skeleton complete');
+					console.log('renew Exercise -movie complete');
+					return res.json('renew');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+});
+
+router.post('/exercise/movie/update',(req,res)=>{
+	console.log('exercise movie update api call')
+
+	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_name},{'movie_title':req.body.movie_title},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					gfs.remove({filename:req.body.movie_title,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						console.log('delete for update movie')
+						//return res.json('delete');
+					});	
+					return res.json('update');
+				}
+			});
+
+	//res.redirect('/HealthCare_API');
+	//res.json({file:req.file});
+});
+
+
+//@route POST /exercise/rgb_skeleton
+//@desc renew exercise rgb_skeleton data
+router.post('/exercise/rgb_skeleton',(req,res)=>{
+	console.log('exercise rgb_skeleton_mp4 renew api call for '+req.body.exercise_name+' '+req.body.body_title+' '+req.body.rgb_title+' '+req.body.mp4_title);
+
+	ExerciseModel.findOneAndUpdate({'exercise':req.body.exercise_name},{'body_title':req.body.body_title,'rgb_title':req.body.rgb_title,'mp4_title':req.body.mp4_title},{multi:true},function(err,data)
+			{
+				if(err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				if(data==null){
+					console.log('Nothing to change');
+					return res.json('empty');
+				}else{
+					console.log('renew Exercise -rgb_skeleton_video complete');
 					return res.json('update');
 				}
 			});
@@ -645,8 +711,9 @@ router.post('/exerciseinfo',(req,res)=>{ //remember key값이름은 보낸곳 �
 				array[2]=data.exercise_desc;
 				array[3]=data.image_title;
 				array[4]=data.movie_title;
-				array[5]=data.body_title;
-				array[6]=data.rgb_title;
+				array[5]=data.mp4_title;
+				array[6]=data.body_title;
+				array[7]=data.rgb_title;
 				console.log("array ver "+array);
 				return res.json(array);
 			}
@@ -655,12 +722,48 @@ router.post('/exerciseinfo',(req,res)=>{ //remember key값이름은 보낸곳 �
 });
 
 /*-----------------------------------------------------------------delete func------------------------------------------------------*/
-//@route DELETE /delete_rgb_bodydata/:categoryname
+//@route DELETE /delete_rgb_bodydata
+//@desc delelte rdb_bodaydata
+router.delete('/delete_movie',(req,res)=>{
+	console.log('movie delete api call');
+	console.log('movie delete '+req.body.exercisename);
+	
+	ExerciseModel.findOne({'exercise':req.body.exercisename},function(err,data){
+		if(err){
+			console.log(err);
+			res.status(500).send('Internal Server Error');
+		}else{
+			if(data==null){
+				return res.json('empty');
+			}else{
+				console.log(data);
+				let exercise_name=data.exercise;
+				let movie_name=data.movie_title;
+				ExerciseModel.findOneAndUpdate({'exercise':data.exercise},{"movie_title":""},{multi:true},(err)=>{
+					if(err) return handleError(err);
+					gfs.remove({filename:movie_name,root:'temp'},(err,girdStore)=>{
+						if(err){
+							return res.status(404).json({err:err});
+						}
+						console.log('delete movie file delete '+movie_name);
+						return res.json('delete');
+					});	
+				});
+			}
+		}
+	});
+	//return res.json('delete test');
+	
+});
+
+
+
+//@route DELETE /delete_rgb_bodydata
 //@desc delelte rdb_bodaydata
 router.post('/delete_rgb_bodydata',(req,res)=>{
-
-	console.log('rgb_body delete api call');
-	console.log('rgb_body delete '+req.body.exercisename);
+	console.log('for privacy delte video data too! ');
+	console.log('rgb_body_mp4 delete api call');
+	console.log('rgb_body_mp4 delete '+req.body.exercisename);
 	
 	ExerciseModel.findOne({'exercise':req.body.exercisename},function(err,data){
 		if(err){
@@ -674,7 +777,8 @@ router.post('/delete_rgb_bodydata',(req,res)=>{
 				let exercise_name=data.exercise;
 				let skelton_name=data.body_title;
 				let rgb_name=data.rgb_title;
-				ExerciseModel.findOneAndUpdate({'exercise':data.exercise},{'body_title':"",'rgb_title':""},{multi:true},(err)=>{
+				let mp4_name=data.mp4_title;
+				ExerciseModel.findOneAndUpdate({'exercise':data.exercise},{'body_title':"",'rgb_title':"","mp4_title":""},{multi:true},(err)=>{
 					if(err) return handleError(err);
 					gfs.remove({filename:rgb_name,root:'temp'},(err,girdStore)=>{
 						if(err){
@@ -685,7 +789,14 @@ router.post('/delete_rgb_bodydata',(req,res)=>{
 						if(err){
 							return res.status(404).json({err:err});
 						}
+							gfs.remove({filename:mp4_name,root:'temp'},(err,girdStore)=>{
+							if(err){
+								return res.status(404).json({err:err});
+							}
 						
+							console.log('delete mp4 file delete '+mp4_name);
+							//return res.json('delete');
+							});	
 						console.log('delete skelton file delete '+skelton_name);
 						return res.json('delete');
 					});	

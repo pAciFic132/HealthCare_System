@@ -20,7 +20,8 @@ Schemas.createExerciseSchema=function(mongo){
     exercise: String,
     exercise_desc: String,
     image_title: String,
-    movie_title: String,
+    movie_title: String,//edited video
+    mp4_title:String,//original mp4 file
     body_title:String,
     rgb_title:String
 	});
